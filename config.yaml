@@ -1,0 +1,36 @@
+import-hooks:
+  "format/GeoJSON": "import { Point, MultiPoint, LineString, MultiLineString, 
+  Polygon, MultiPolygon, GeometryCollection, FeatureCollection } from 'geojson';"
+  "format/EsriJSON": "import { FeatureSet } from 'arcgis-rest-api';" 
+  "format/GML": "import { GML3 as GML } from './GML3';"
+code-injection:
+  "proj/Units": "declare enum Units {
+    'DEGREES' = 'degrees',
+    'FEET' = 'ft',
+    'METERS' = 'm',
+    'PIXELS' = 'pixels',
+    'TILE_PIXELS' = 'tile-pixels',
+    'USFEET' = 'us-ft'
+}"
+  "render/canvas/Instruction": "declare enum Instruction {
+    BEGIN_GEOMETRY = 0,
+    BEGIN_PATH = 1,
+    CIRCLE = 2,
+    CLOSE_PATH = 3,
+    CUSTOM = 4,
+    DRAW_CHARS = 5,
+    DRAW_IMAGE = 6,
+    END_GEOMETRY = 7,
+    FILL = 8,
+    MOVE_TO_LINE_TO = 9,
+    SET_FILL_STYLE = 10,
+    SET_STROKE_STYLE = 11,
+    STROKE = 12
+}"
+code-replacement:
+  "renderer/canvas/VectorLayer": 
+    - "forEachFeatureAtCoordinate(coordinate: any, frameState: any, hitTolerance: any, callback: any, thisArg: any): any;"
+    - "forEachFeatureAtCoordinate(coordinate: any, frameState: any, hitTolerance: any, callback: any, thisArg?: any): any;"
+  "renderer/canvas/VectorTileLayer": 
+    - "forEachFeatureAtCoordinate(coordinate: any, frameState: any, hitTolerance: any, callback: any, thisArg: any): any;"
+    - "forEachFeatureAtCoordinate(coordinate: any, frameState: any, hitTolerance: any, callback: any, thisArg?: any): any;"
