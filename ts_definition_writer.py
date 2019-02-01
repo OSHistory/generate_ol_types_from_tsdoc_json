@@ -19,18 +19,18 @@ class TSDefinitionWriter():
         # is unfortunately dropped during export to json
         self.generic_classes = ['Collection', 'FeatureCollection']
         self.id_type_dict = {}
-        self.config = self._parse_config()
-        print(self.config["code-replacement"])
+        self.fixes = self._parse_fixes()
+        print(self.fixes["code-replacement"])
         # TODO: debug -> remove
         self.kind_dict = {}
         self._generate_id_type_dict(self.content, self.id_type_dict, None)
         print(self.kind_dict)
         self._parse_modules()
 
-    def _parse_config(self):
-        with open("config.yaml") as fh:
-            config = yaml.load(fh)
-        return config
+    def _parse_fixes(self):
+        with open("fixes.yaml") as fh:
+            fixes = yaml.load(fh)
+        return fixes
 
     """
     Maps typedoc-ids to import paths and json-representation
@@ -68,8 +68,8 @@ class TSDefinitionWriter():
         module_string = ""
         module_name = module["name"].strip("\"")
 
-        if module_name in self.config["code-injection"]:
-            module_string += self.config["code-injection"][module_name] + "\n"
+        if module_name in self.fixes["code-injection"]:
+            module_string += self.fixes["code-injection"][module_name] + "\n"
             print("ADDING")
             print(module_string)
         if "children" in module:
@@ -95,9 +95,9 @@ class TSDefinitionWriter():
 
         print("RUNNING REPLACEMENTS")
         print(module_name)
-        if module_name in self.config["code-replacement"]:
+        if module_name in self.fixes["code-replacement"]:
             print("MODULE HITS")
-            replace_list = self.config["code-replacement"][module_name]
+            replace_list = self.fixes["code-replacement"][module_name]
             for idx in range(0, len(replace_list)):
                 if idx % 2 == 0:
                     module_string = module_string.replace(replace_list[idx], replace_list[idx+1])
@@ -144,8 +144,8 @@ class TSDefinitionWriter():
                     import_path=relative_path
                 )
         module_name = module["name"].strip("\"")
-        if module_name in self.config["import-hooks"]:
-            import_str += self.config["import-hooks"][module_name] + "\n"
+        if module_name in self.fixes["import-hooks"]:
+            import_str += self.fixes["import-hooks"][module_name] + "\n"
 
         return import_str
 
@@ -164,7 +164,6 @@ class TSDefinitionWriter():
         if node["name"] == os.path.basename(path).rpartition(".")[0].strip():
             self.default_export = node["name"]
         if node["kind"] == 128:
-
             return self._resolve_class_node(node) # "CLASS DECLARATION"
         elif node["kind"] == 64:
             if self._is_exported(node):
